@@ -1,0 +1,316 @@
+<!doctype html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0F4F4C"><meta name="description" content="Три полные бизнес-модели FIVEROX: ручной обзвон, ИИ-квалификация и Авито для действующих партнеров."><title>FIVEROX · Воронки продаж и удержания</title><style>
+:root{--brand:#0f4f4c;--ink:#263535;--muted:#4c6460;--line:#cdded8;--ground:#f4f8f6;--soft:#e1eeea}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.52 system-ui,sans-serif}
+a{color:var(--brand);text-underline-offset:3px}button,input,summary{font:inherit}a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #a94700;outline-offset:3px}
+header{background:var(--brand);color:#fff;padding-block:13px}header a{color:#fff}header strong{letter-spacing:.13em}
+.wrap{max-width:1250px;padding-inline:22px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+main{padding-block:26px 60px}h1{font-size:clamp(1.85rem,4.4vw,3.35rem);line-height:1.1;letter-spacing:-.035em;margin:.45rem 0}h2,h3{line-height:1.22;margin:0 0 .65rem}p{margin:.6rem 0}
+.note,.scope,small{color:var(--muted);font-size:.92rem}.scope{max-width:82ch}
+nav{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}nav a,.btn{background:#fff;border:1px solid var(--line);border-radius:7px;color:var(--brand);padding:7px 11px;text-decoration:none;font-weight:650;cursor:pointer}
+nav a[aria-current]{background:var(--brand);border-color:var(--brand);color:#fff}
+#kpi,.stage-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:15px 0}
+#kpi>div,.box,.block{background:white;border:1px solid var(--line);border-radius:10px;padding:14px;margin:0 0 10px}
+#kpi strong,.stage-grid strong{display:block;font-size:clamp(1.35rem,3vw,2rem);color:var(--brand);line-height:1.1}#kpi span{display:block;font-size:.86rem;margin-top:.45rem;color:var(--muted)}
+.table-scroll{overflow:auto}table{border-collapse:collapse;width:100%;font-size:.92rem}td,th{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid #e0eae7}th{font-weight:600}thead th{background:var(--soft);color:var(--brand)}td{font-variant-numeric:tabular-nums}
+summary{cursor:pointer;font-weight:650;color:var(--brand)}details[open]>summary{margin-bottom:6px}dd{margin:0 0 8px}dt{font-weight:700}
+.canvas{display:grid;gap:9px;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-areas:"partners activities value relations segments" "partners resources value channels segments" "costs costs costs revenue revenue"}
+.block{margin:0}.partners{grid-area:partners}.activities{grid-area:activities}.value{grid-area:value;background:var(--soft)}.relations{grid-area:relations}.segments{grid-area:segments}.resources{grid-area:resources}.channels{grid-area:channels}.costs{grid-area:costs}.revenue{grid-area:revenue}
+.controls{margin-top:15px}.param-actions{display:flex;gap:9px;flex-wrap:wrap;margin-block:10px}
+#fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:12px}
+fieldset{border:1px solid var(--line);padding:8px;margin:0;border-radius:7px;min-width:0}legend{font-weight:650;color:var(--brand);padding-inline:5px}
+label{display:grid;grid-template-columns:minmax(0,1fr) 90px;gap:3px 7px;align-items:center;margin-bottom:8px;font-size:.9rem}label small{grid-column:1/-1;font-size:.78rem}input{min-width:0;width:100%;padding:4px 6px;color:var(--ink);border:1px solid #91aca4;border-radius:4px}
+#status{padding:8px;border-left:3px solid #a94700;background:#fff4e8}footer{border-top:1px solid var(--line);margin-top:20px;padding-top:13px}
+@media(max-width:850px){.canvas{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:none}.block{grid-area:auto}.stage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.wrap{padding-inline:12px}#kpi,.stage-grid,.canvas{grid-template-columns:1fr}nav a,.btn{padding:6px 8px;font-size:.88rem}}
+</style></head><body>
+<header><div class="wrap top"><strong>FIVEROX</strong><a href="./business-system.html">Дилерская модель</a></div></header><main class="wrap">
+<nav id="units" aria-label="Модели"></nav><h1 id="title"></h1><p id="scope" class="scope"></p><p id="unit" class="scope"></p>
+<div id="kpi" aria-live="polite"></div><nav id="sections" aria-label="Раздел модели"></nav>
+<details class="box controls"><summary>Параметры и цель</summary><p id="params-unit" class="note"></p><p class="note">Результаты всех разделов меняются сразу при вводе. Деньги указаны в рублях. Сброс восстанавливает исходные значения трех моделей.</p>
+<form id="parameters"><div class="param-actions"><button class="btn" type="reset">Сбросить параметры</button></div><div id="fields"></div></form></details>
+<p id="status" role="status" hidden></p><div id="content"></div>
+<footer><button class="btn" id="export" type="button">Скачать входные данные и канвы</button></footer>
+<noscript>Для пересчета и переключения моделей включите JavaScript.</noscript></main><script>const defaults = {
+  base:200, confirmed:80, phoneTest:20, visitShare:100, days:22, visitsDay:5, reserve:0,
+  meetTest:50, meetSale:20, held:50, afterTest:50, first:35000, monthly:100000,
+  margin:20, bonus:2, manager:80000, travel:0, contactCost:0, initialManual:0,
+  eligible:100, aiConfirm:80, aiPhone:20, aiReady:10, aiVisit:30, aiAccept:50,
+  minutes:2.4, minutePrice:10, dev:100000, manualGoal:250000, aiGoal:250000,
+  retention:75, refShare:10, refSales:20,
+  partners:10, holdout:60, campaign:75, ads:50000, fee:20000, cpl:2500,
+  extra:0, qualified:70, booking:50, service:70, avitoGoal:0
+};
+const pct=n=>n/100;
+const div=(a,b)=>b>0?a/b:null;
+const finite=n=>Number.isFinite(n);
+const optimize=(evaluate,breakpoint,goal)=>{
+  const stops=[0,...(finite(breakpoint)&&breakpoint>0?[breakpoint]:[]),1e8];
+  for(let k=1;k<stops.length;k++){
+    const min=stops[k-1],max=stops[k],lo=evaluate(min),hi=evaluate(max);
+    if(Math.abs(lo-goal)<.00001)return min;
+    if((goal-lo)*(goal-hi)>0 || lo===hi)continue;
+    return min+(goal-lo)*(max-min)/(hi-lo);
+  }
+  return null;
+};
+function field(wanted, capacity, phone, x){
+  const visits=Math.min(wanted,capacity);
+  const meetingTests=visits*pct(x.meetTest), direct=visits*pct(x.meetSale);
+  const scheduled=phone+meetingTests, completed=scheduled*pct(x.held);
+  return {wanted,visits,meetingTests,direct,refused:visits-meetingTests-direct,
+    scheduled,completed,testBuyers:completed*pct(x.afterTest)};
+}
+function economics(buyers,visits,inputSpend,initial,x) {
+  const net=pct(x.margin-x.bonus), revenue=buyers*x.first, fixed=x.manager+visits*x.travel;
+  return {buyers,revenue,net,margin:revenue*pct(x.margin),bonus:revenue*pct(x.bonus),
+    fixed,inputSpend,operating:revenue*net-fixed-inputSpend,initial,payroll:x.manager,
+    launch:revenue*net-fixed-inputSpend-initial,cac:div(fixed+inputSpend,buyers),
+    matureTurnover:buyers*x.monthly,matureContribution:buyers*x.monthly*net,
+    breakEven:div(fixed+inputSpend,x.first*net)};
+}
+function manual(x){
+  const capacity=Math.floor(x.days*x.visitsDay*(1-pct(x.reserve)));
+  const confirmed=x.base*pct(x.confirmed), phone=confirmed*pct(x.phoneTest);
+  const wanted=(confirmed-phone)*pct(x.visitShare), f=field(wanted,capacity,phone,x);
+  const full=field(wanted,Infinity,phone,x),paid=full.direct+full.testBuyers;
+  return {...f,capacity,confirmed,phone,fullBuyers:paid,fullRevenue:paid*x.first,
+    fullDays:div(wanted,x.visitsDay),firstValue:confirmed,
+    ...economics(f.direct+f.testBuyers,f.visits,x.base*x.contactCost,x.initialManual,x)};
+}
+function ai(x){
+  const capacity=Math.floor(x.days*x.visitsDay*(1-pct(x.reserve)));
+  const allowed=x.base*pct(x.eligible),confirmed=allowed*pct(x.aiConfirm);
+  const phone=confirmed*pct(x.aiPhone),ready=confirmed*pct(x.aiReady),hotBuyers=ready*pct(x.aiAccept);
+  const f=field(confirmed*pct(x.aiVisit),capacity,phone,x);
+  const minutes=allowed*x.minutes,calls=minutes*x.minutePrice;
+  return {...f,capacity,allowed,confirmed,phone,ready,hotBuyers,minutes,calls,
+    handoff:ready+phone+f.wanted,...economics(f.direct+f.testBuyers+hotBuyers,f.visits,calls,x.dev,x)};
+}
+function avito(x){
+  const lead=div(x.ads,x.cpl)??0, cost=x.ads+x.fee, net=pct(x.margin-x.bonus);
+  const qualified=lead*pct(x.qualified), booked=qualified*pct(x.booking), serviced=booked*pct(x.service);
+  const retained=x.partners*pct(x.campaign), control=x.partners*pct(x.holdout);
+  const extraPartners=retained-control, revenue=extraPartners*x.monthly+x.extra;
+  const need=div(cost,net), needPartners=need===null?null:div(need-x.extra,x.monthly);
+  return {lead,qualified,booked,serviced,cost,net,control,retained,extraPartners,revenue,
+    operating:revenue*net-cost, fullCpl:div(cost,lead), need,
+    needPartners:needPartners===null?null:Math.max(0,needPartners),
+    requiredRetention:needPartners===null||x.partners<=0?null:pct(x.holdout)+needPartners/x.partners};
+}
+const calculators={manual,ai,avito};
+function cohorts(type,x,m){
+  const isPartner=type==='avito';
+  return Array.from({length:6},(_,age)=>{
+    const current=(isPartner?x.partners:m.buyers)*(pct(isPartner?x.campaign:x.retention)**age);
+    const control=isPartner?x.partners*pct(x.holdout)**age:null;
+    const revenue=isPartner?(current-control)*x.monthly+(age>0?x.extra:0):current*(age===0?x.first:x.monthly);
+    const allocated=isPartner?m.cost:(age===0?m.fixed+m.inputSpend+m.initial:0);
+    return {age,current,control,revenue,contribution:revenue*m.net,allocated,result:revenue*m.net-allocated};
+  });
+}
+function khanin(type,x,m){
+  const isAI=type==='ai', isPartner=type==='avito';
+  const goal=x[type==='manual'?'manualGoal':isAI?'aiGoal':'avitoGoal'];
+  const fullNeed=(isPartner?m.cost:m.fixed+m.inputSpend)+goal;
+  const format=(label,unit,base,target,note)=>({label,unit,base,target:finite(target)&&target>=0?target:null,note});
+  if(isPartner){
+    const gap=pct(x.campaign-x.holdout), delta=m.extraPartners, need=div(fullNeed,m.net);
+    const neededRet=need===null||x.partners*x.monthly<=0?null:pct(x.holdout)+(need-x.extra)/(x.partners*x.monthly);
+    const price=need===null?null:div(need-x.extra,delta);
+    const gross=div(fullNeed,m.revenue);
+    const unitMargin=fullNeed<=0?0:gross===null?null:gross+pct(x.bonus);
+    const fee=m.revenue*m.net-x.ads-goal;
+    const cpl=div(m.revenue*m.net-x.fee-goal,m.lead);
+    return [
+      format("Студий в пилоте","шт",x.partners,need===null?null:div(need-x.extra,gap*x.monthly),"При текущем разрыве удержания и неизменном бюджете. Проверить, хватит ли лидов на студию."),
+      format("Месячное удержание с Авито","%",x.campaign,neededRet===null||neededRet>1?null:Math.max(0,neededRet)*100,"Удержание контрольной группы фиксировано. Верхняя граница 100%."),
+      format("Месячная закупка активной студии","₽",x.monthly,price,"При текущем количестве дополнительно удержанных студий."),
+      format("Валовая маржа до премии","%",x.margin,unitMargin===null||unitMargin>1?null:unitMargin*100,"Премия остается процентом от выручки."),
+      format("Максимальная стоимость ведения","₽",x.fee,fee,"Рекламный бюджет и объем закупок сохранены."),
+      format("Прирост закупок сверх удержания","₽",x.extra,need===null?null:Math.max(0,need-delta*x.monthly),"Вносить только независимый прирост по выполненным работам."),
+      format("Предельная цена рекламного лида","₽",x.cpl,cpl,"Плановое число лидов фиксировано, бюджет меняется вместе с CPL. Закупки фиксированы."),
+    ];
+  }
+  const trafficRate=isAI?pct(x.eligible)*pct(x.aiConfirm)*pct(x.aiVisit):
+    pct(x.confirmed)*(1-pct(x.phoneTest))*pct(x.visitShare);
+  const evaluate=calculators[type];
+  const baseTarget=optimize(n=>evaluate({...x,base:n}).operating,div(m.capacity,trafficRate),goal);
+  const buyers=div(fullNeed,x.first*m.net);
+  const conversion=m.buyers?div(buyers,x.base):buyers===null?null:div(buyers,x.base);
+  const eligible=isAI?pct(x.eligible)*pct(x.aiConfirm):pct(x.confirmed);
+  const targetPrice=div(fullNeed,m.buyers*m.net);
+  const requiredMargin=div(fullNeed,m.revenue);
+  const maxSalary=m.revenue*m.net-m.inputSpend-m.visits*x.travel-goal;
+  const apc=div(fullNeed,m.revenue*m.net);
+  const residual=m.revenue*m.net-m.fixed-goal;
+  return [
+    format("Входящая база","шт",x.base,baseTarget,"Конверсии сохранены, выезды ограничены, стоимость входа растет с базой."),
+    format("База → первая покупка","%",x.base?100*m.buyers/x.base:null,conversion!==null&&conversion<=eligible?100*conversion:null,"Сквозная целевая конверсия. Проверить, какая ветка и мощность дадут прирост."),
+    format("Чек первой закупки","₽",x.first,targetPrice,"Количество покупателей фиксировано, премия и валовая маржа пересчитываются."),
+    format("Валовая маржа до премии","%",x.margin,requiredMargin===null||requiredMargin+pct(x.bonus)>1?null:100*(requiredMargin+pct(x.bonus)),"Удерживаем оборот и переменный процент премии."),
+    format("Максимальный оклад на канал","₽",x.manager,maxSalary,"Остальные расходы и текущий объем сохранены."),
+    format("Закупок на покупателя за период","×",1,apc,"Теоретический APC при том же чеке. Повтор должен быть оплачен в периоде."),
+    format(isAI?"Предельная цена минуты ИИ":"Предельная цена входящей записи","₽",isAI?x.minutePrice:x.contactCost,div(residual,isAI?m.minutes:x.base),"Объем фиксирован. Это цена единицы трафика, а не CAC."),
+  ];
+}
+
+const model={"manual":{"title":"Ручной обзвон и выезды","icon":"Прямые продажи","unit":"Одна уникальная студия и ее первая оплаченная закупка пленки.","scope":"B2B · пилот одного региона на когорте из CRM · месяц и 90 дней. Покупатель — независимая студия тонировки/оклейки, не закупавшая в периоде отсечения.","geo":"Для пилота — один участок Москвы и МО. 200 точек являются рабочей когортой, не размером рынка. Регион выбран как допущение.","alternative":"Остаться у текущего поставщика или купить один рулон у другого оптовика.","market":"Проверить выпуск по одной зоне выездов. Посчитать уникальные активные точки с подтвержденной услугой, совпадение по сети и новый/действующий статус в CRM. Доступной доли рынка по пленке пока нет.","gaps":"Нет выгрузки звонков, расходов на визит, стоимости обработки базы и зрелых повторов по точкам. 22 выездных дня, 100% выхода на встречи из остатка и 75% удержания — типовые значения для расчета.","sources":[["Входные показатели FIVEROX","","Условия и оценочные конверсии из задания. Запросить CRM с датами, заказами, возвратами и одинаковым определением точки."],["ATOMGARD · каталог","https://atomgard.ru/","Официальный ассортимент пленок и примеры SKU."],["MEMBRANE · партнеры","https://ru.membrane-ppf.com/contact","Публичная сеть поставщиков как альтернатива для студии."],["UNIONDELTA · каталог","https://www.uniondelta.ru/catalog/","Сравнение ассортиментной доступности. Условия переговоров и конкретные цены проверяются отдельно."],["АВТОСТАТ · октябрь 2026","https://www.autostat.ru/press-releases/63433/","Контекст спроса: 132,9 тыс. новых легковых автомобилей. Это индикатор смежного рынка, а не объем рынка пленки."]],"canvas":[{"id":"partners","title":"Ключевые партнеры","what":"Поставщики товара, склад, региональный представитель и партнерские студии.","kpi":"Доступность ходовых позиций","check":"Сверить остатки, тестовые образцы и владельца доставки."},{"id":"activities","title":"Виды деятельности","what":"Парсинг, дедупликация, обзвон, маршруты, тесты, заказ и повторный контакт.","kpi":"Первые оплаченные заказы / 200 точек","check":"Сверить события звонка, теста и оплаты по ID."},{"id":"resources","title":"Ресурсы","what":"Собственная CRM, менеджер, образцы, прайс и слоты выездов.","kpi":"Факт визитов / доступная емкость","check":"Записать время контактов, визитов и сопровождения."},{"id":"value","title":"Ценностное предложение","what":"Мастер проверяет пленку на своей задаче и получает срок поставки и экономику заказа.","kpi":"Покупки / завершенные тесты","check":"Спросить, какой критерий мастер считает проходным."},{"id":"relations","title":"Отношения с клиентами","what":"Менеджер отвечает за точку от первого контакта до повторной закупки.","kpi":"Доля с повторной оплатой М+1","check":"Дедуплицировать повтор и частичные оплаты."},{"id":"channels","title":"Каналы","what":"База карт, ручной телефонный контакт, выезды и рекомендации мастеров.","kpi":"Дозвон и подтверждение профиля","check":"Сверить 80% подтверждения по записи CRM."},{"id":"segments","title":"Сегменты клиентов","what":"Владелец или закупщик независимой студии тонировки и оклейки.","kpi":"Подтвержденные новые точки в регионе","check":"Исключить дубли, действующих клиентов и нерелевантные услуги."},{"id":"costs","title":"Структура затрат","what":"Оклад, премия от оборота, выезды, обработка базы и тестовые образцы.","kpi":"Стоимость нового покупателя","check":"Внести реальные расходы на образцы, логистику и выезды."},{"id":"revenue","title":"Потоки выручки","what":"Первая оплаченная закупка 35 тыс. ₽ и следующие месяцы активного клиента.","kpi":"Оборот первых заказов и повторов по когортам","check":"Подтвердить покупку по оплате и учесть возвраты."}],"vpc":{"job":"Подобрать пленку под типовые работы без простоя и переделок.","pain":"Незнакомый материал, риск брака, складской остаток и потраченное время мастера.","gain":"Понятный тест, наличие нужной позиции, быстрый повтор.","offer":"Тест на согласованной задаче и предложение на первую закупку после результата.","relief":"Предварительно уточнить тип работ и критерий приемки, подтвердить срок поставки.","proof":"Отметить результат теста и сравнить с критериями клиента до первой оплаты."},"ladder":["Покажите, где теряются время и материал","Обсудите последний случай переделки","Дайте подходящий образец и критерий приемки","Покажите наличие, сроки и расчет по SKU","Согласуйте оплачиваемую первую закупку"],"interview":["Как покупали пленку в последний раз?","Какая пленка ушла в переделку и почему?","По какому результату вы переходите с теста на заказ?","Кто согласовывает расход и когда нужна следующая партия?"],"funnel":[["Awareness","Точки получили контакт в рамках когорты","Уникальные точки в базе","30 дней"],["Acquisition","Подтверждены профиль и контакт","Контактированные точки","30 дней"],["Activation","Студия провела тест или приняла первую поставку без теста","Подтвержденные точки","30–60 дней"],["Retention","Точки с закупкой в следующем месяце","Когорта сценарных первых покупателей","М+1"],["Referral","Новый покупатель по рекомендации","Когорта первых покупателей; доли рекомендателей и их оплат — допущения","90 дней"],["Revenue","Первая оплаченная закупка по ИНН","Точки с подтвержденным профилем","30–60 дней"]],"experiments":[["M1","Проведенные тесты","Подтверждение календаря и задачи за сутки повышает долю проведенных тестов.","2 группы по 30 согласованных тестов, 30 дней. Обычное напоминание против подтверждения задачи.","Состоялось / согласовано; граница решения 60% против исходных 50%.","До 10 тыс. ₽ из согласуемого бюджета. Пауза при жалобах или срыве более 20% визитов.","8","7","8","Реализуется без изменения прайса."],["M2","Маршрут","Зоны выезда уменьшают время в дороге.","По 10 сравнимых выездных дней. Группировать соседние студии, фиксировать дорогу и результат.","Не менее 5 визитов в день при сохранении доли оплат.","Тот же лимит поездок. Пауза, если растут опоздания.","7","6","8","Есть операционная выгода от времени."],["M3","Первая закупка","Согласованный критерий теста увеличивает долю оплат.","Две недели последовательно по 20 проведенных тестов, с критериями и без.","Первые покупки / тесты за 14 дней, ориентир +10 п. п.","До 5 тыс. ₽ на материалы после согласования. Пауза при росте брака.","8","5","7","Нет фактической базы тестов."]],"execution":[["Неделя 1","Аналитик CRM","200 уникальных новых точек, источник, услуги, владелец записи и статус согласия."],["Неделя 2","Региональный менеджер","Развести телефонный тест и визит по разным статусам. Сверить фактическую емкость маршрутов."],["Недели 3–4","Менеджер и склад","Передать образец, зафиксировать тест, оплату и выдачу пленки с единым ID."],["Месяцы 2–3","Руководитель продаж и финансы","Сверить вклад, повторы М+1, расходы на визит и целевые значения Ханина."]]},"ai":{"title":"ИИ-квалификация и передача менеджеру","icon":"Прямые продажи","unit":"Одна студия с основанием для обзвона. Доход учитывается при первой оплаченной закупке.","scope":"B2B · отдельный пилот на сопоставимой базе студий · месяц, горизонт сравнения 90 дней. Покупатель — владелец или закупщик студии.","geo":"Та же территория Москвы и МО для парного сравнения. Одна студия участвует только в одном плече теста.","alternative":"Ручной квалифицирующий контакт или обработка входящего интереса менеджером.","market":"Доступный объем определяет подтвержденный допуск к вызову. Общий список найденных контактов служит верхней границей. Стоимость и длительность сверяются по детализации.","gaps":"Нет фактов ИИ-пилота, доли согласий, длительности платных соединений и тарифной детализации. 100% допуск — расчетная верхняя оценка. Статусы 20%/10%/30% и 2,4 минуты — типовые значения.","sources":[["Входные показатели FIVEROX","","Условия и оценочные конверсии из задания. Запросить CRM с датами, заказами, возвратами и одинаковым определением точки."],["ATOMGARD · каталог","https://atomgard.ru/","Официальный ассортимент пленок и примеры SKU."],["MEMBRANE · партнеры","https://ru.membrane-ppf.com/contact","Публичная сеть поставщиков как альтернатива для студии."],["UNIONDELTA · каталог","https://www.uniondelta.ru/catalog/","Сравнение ассортиментной доступности. Условия переговоров и конкретные цены проверяются отдельно."],["АВТОСТАТ · октябрь 2026","https://www.autostat.ru/press-releases/63433/","Контекст спроса: 132,9 тыс. новых легковых автомобилей. Это индикатор смежного рынка, а не объем рынка пленки."],["ФЗ «О связи» · ст. 44.1-1","https://www.consultant.ru/document/cons_doc_LAW_43224/b5a11e1f308ded9f4b94bf885bcf76ed577f9576/","Предварительное согласие для массовых и автоматических вызовов."],["ФЗ «О рекламе» · ст. 18","https://www.consultant.ru/document/cons_doc_LAW_58968/f892dec1383709792452f18d36e7043306e2be0a/","Требования к рекламе по телефону и запрет автоматического дозванивания для рекламы."]],"canvas":[{"id":"partners","title":"Ключевые партнеры","what":"Провайдер телефонии, подрядчик ИИ, CRM, менеджер и склад.","kpi":"Доступность вызова и приема лида","check":"Проверить тарифы, журнал вызовов и дубль в CRM."},{"id":"activities","title":"Виды деятельности","what":"Проверка основания звонка, квалификация, передача и обработка менеджером.","kpi":"Первые оплаты / допущенные точки","check":"Разметить причины отказа и ошибки ИИ."},{"id":"resources","title":"Ресурсы","what":"Сценарий вопросов, интеграция CRM, телефония и время менеджера.","kpi":"Платные минуты / допущенный контакт","check":"Сверить счет оператора с журналом."},{"id":"value","title":"Ценностное предложение","what":"Студия быстро получает ответ по следующему шагу и помощь человека там, где нужна.","kpi":"Доля точек с подтвержденным следующим шагом","check":"Оценивать содержательный ответ на вопрос студии."},{"id":"relations","title":"Отношения с клиентами","what":"Менеджер принимает готовых к покупке или тесту и подтверждает обещанный шаг.","kpi":"Оплаты / переданные горячие лиды","check":"Контролировать скорость первой реакции и отсутствие дублей."},{"id":"channels","title":"Каналы","what":"Пилот квалификации допущенной базы; менеджер завершает сделку.","kpi":"Переданные лиды / допущенная база","check":"Проверить загрузку и сравнить контрольную группу."},{"id":"segments","title":"Сегменты клиентов","what":"Те же владельцы студий, на которых распространяется согласованный сценарий вызова.","kpi":"Доля базы с подтвержденным допуском","check":"Хранить проверяемое основание обработки."},{"id":"costs","title":"Структура затрат","what":"100 тыс. ₽ разработка, минуты, оклад, премия и выезды.","kpi":"Регулярные расходы / первая оплата","check":"Разовую разработку показать отдельно от месяца работы."},{"id":"revenue","title":"Потоки выручки","what":"Оплаченные первые закупки после квалификации и повторы тех же точек.","kpi":"Инкрементальный вклад против ручного плеча","check":"Не приписывать ИИ повтор из другой когорты."}],"vpc":{"job":"Быстро получить подходящее действие по конкретному материалу.","pain":"Нежелательные звонки, многократные вопросы и непонятные сроки ответа.","gain":"Один согласованный следующий шаг и быстрый контакт человека.","offer":"Квалификация запроса с передачей менеджеру нужного контекста.","relief":"Подтвердить допустимость звонка и возможность прекратить его, исключить дубли.","proof":"Связать квалификацию, задачу менеджеру и первую оплату по ID."},"ladder":["Уточните, запрашивала ли точка контакт","Определите задачу и срок","Согласуйте тест с подтверждением","Передайте менеджеру контекст выбора","Доведите готовый запрос до оплаты"],"interview":["Что вы хотели узнать при последнем обращении к поставщику?","Какой вопрос отнимает больше всего времени?","Где вы хотели перейти на человека?","Какой срок ответа был критичным?"],"funnel":[["Awareness","Записи допущены к контакту","Студии исходной когорты","Месяц"],["Acquisition","Подтверждены профиль и контакт","Записи с допуском","Месяц"],["Activation","Студия провела тест или приняла первую поставку без теста","Студии, переданные менеджеру","30–60 дней"],["Retention","Точки с заказом в следующем месяце","Когорта первых покупателей","М+1"],["Referral","Новый покупатель по рекомендации студии","Когорта первых покупателей; доли — сценарные","90 дней"],["Revenue","Первая оплаченная закупка","Переданные менеджеру студии","30–60 дней"]],"experiments":[["A1","Парный пилот","ИИ сокращает визиты при сопоставимом вкладе.","Случайно разделить по 50 допущенных студий, равный сегмент, 30–60 дней. Контроль — ручная обработка.","Чистый вклад канала на 1 допущенный контакт и число визитов. Ориентир не ниже ручного вклада.","Платные минуты отдельно. Остановить при ошибке допуска, жалобах или неподтвержденной передаче.","10","6","6","Главный риск — значимая потеря первых закупок."],["A2","Передача горячего лида","Карточка с конкретным следующим шагом повышает оплату.","Сравнить два формата заявки по 20 карточек, 14 дней.","Оплаты / горячие лиды и время первого ответа.","В бюджете пилота. Пауза при росте дублей.","8","5","8","Дешевый тест после интеграции."],["A3","Минуты","Короткий сценарий снижает платное время без потери качества.","Сопоставимые допустимые контакты, два варианта, 2 недели.","Минуты / запись и точность квалификации по ручной проверке.","Пауза при точности классификации ниже 80%.","7","5","7","Стоимость зависит от тарифа и соединений."]],"execution":[["Неделя 1","Руководитель проекта и юрист","Проверенный сценарий, реестр допуска, подтвержденный тариф и способ остановки."],["Неделя 2","Интегратор CRM","Три взаимно исключающие ветки, журнал, защита от дублей, контрольное прохождение."],["Недели 3–4","Менеджер и аналитик","Раздельные когорты, SLA передачи, счета телефонии и ручная верификация."],["Месяцы 2–3","Финансы и руководитель продаж","Проверить инкрементальный вклад, сохранение качества и окупаемость разработки."]]},"avito":{"title":"Авито для действующих студий","icon":"Удержание","unit":"Одна действующая студия в когорте пилота. Выручка FIVEROX — прирост закупок материалов.","scope":"B2B2C · 1 регион · бюджет на месяц, эффект удержания М+1 и LTV на 6 месяцев. Студия — покупатель материала. Автовладелец — получатель услуги студии.","geo":"Москва и МО как сценарий первого региона; 10 действующих студий и сопоставимый контроль — типовые значения, можно изменить.","alternative":"Студии сами привлекают клиентов или остаются на своей органике; FIVEROX сохраняет обычное сопровождение без субсидии.","market":"Проверить спрос в конкретных зонах и услуги действующих студий. Объем лидов здесь выводится из бюджета и CPL, а не из числа объявлений.","gaps":"Нет истории кабинета, подтвержденных CPL, факта записи и удержания по сопоставимому контролю. 60%/75% удержания и 70%/50%/70% движения лида — типовые значения.","sources":[["Входные показатели FIVEROX","","Условия и оценочные конверсии из задания. Запросить CRM с датами, заказами, возвратами и одинаковым определением точки."],["ATOMGARD · каталог","https://atomgard.ru/","Официальный ассортимент пленок и примеры SKU."],["MEMBRANE · партнеры","https://ru.membrane-ppf.com/contact","Публичная сеть поставщиков как альтернатива для студии."],["UNIONDELTA · каталог","https://www.uniondelta.ru/catalog/","Сравнение ассортиментной доступности. Условия переговоров и конкретные цены проверяются отдельно."],["АВТОСТАТ · октябрь 2026","https://www.autostat.ru/press-releases/63433/","Контекст спроса: 132,9 тыс. новых легковых автомобилей. Это индикатор смежного рынка, а не объем рынка пленки."],["Авито Услуги","https://www.avito.ru/rossiya/predlozheniya_uslug","Площадка привлечения. CPL и качество обращения берутся из факта пилота, а не из внешнего каталога."]],"canvas":[{"id":"partners","title":"Ключевые партнеры","what":"Авито, действующие студии, координатор и региональный менеджер.","kpi":"Принятые лиды по студиям","check":"Зафиксировать согласованные услуги и доступные слоты."},{"id":"activities","title":"Виды деятельности","what":"Объявления, прием и маршрутизация лидов, запись, сверка выполненных работ и закупок.","kpi":"Выполненные работы / переданные лиды","check":"Дедуплицировать обращения и проверить живую связь."},{"id":"resources","title":"Ресурсы","what":"Кабинет Авито, бюджет, CRM и свободные слоты студий.","kpi":"CPL с учетом ведения","check":"Сверить расходы с кабинетом и уникальные заявки с CRM."},{"id":"value","title":"Ценностное предложение","what":"Партнер получает реальные запросы по своим услугам и понимает, какие обращения приведены.","kpi":"Работы и инкрементальные закупки","check":"Замерить добавочный эффект против контроля."},{"id":"relations","title":"Отношения с клиентами","what":"Действующие партнеры с правилами приема и еженедельной сверкой.","kpi":"Удержание закупающих точек М+1","check":"Проверить причины оттока и отказов в принятии."},{"id":"channels","title":"Каналы","what":"Авито Услуги, передача обращения в CRM и согласованной студии.","kpi":"Уникальные лиды / рекламные расходы","check":"Проверить возраст лида, дубль и статус записи."},{"id":"segments","title":"Сегменты клиентов","what":"Студии, уже закупающие пленку, с запасом мощности; автовладельцы как аудитория объявления.","kpi":"Активные партнеры и доступные слоты","check":"Сопоставить тест и контроль по обороту до пилота."},{"id":"costs","title":"Структура затрат","what":"20 тыс. ₽ ведение, 50 тыс. ₽ реклама, переменная премия с прироста товарного оборота.","kpi":"70 тыс. ₽ / регион / мес.","check":"План-факт и остановка при систематическом превышении бюджета."},{"id":"revenue","title":"Потоки выручки","what":"Дополнительная оплата пленки действующими студиями за счет удержания и выполненных работ.","kpi":"Инкрементальный вклад после бюджета","check":"Услуга студии не входит в выручку FIVEROX."}],"vpc":{"job":"Заполнять доступные слоты работой и поддерживать оборот материала.","pain":"Нецелевые обращения, неравномерная загрузка и отсутствие атрибуции.","gain":"Уникальные запросы рядом со студией и прозрачный учет результатов.","offer":"Региональный канал лидов с маршрутизацией на действующего партнера и контролем записи.","relief":"Проверка услуги и географии, время ответа, перераспределение не принятых лидов.","proof":"Сравнить оплаченные закупки тестовой и контрольной групп, учесть возвраты и сезонность."},"ladder":["Выявите свободные рабочие слоты","Проверьте проблемы текущих лидов","Предложите передачу релевантных запросов","Согласуйте SLA приема и правила атрибуции","Покажите выполненные работы и разницу закупок"],"interview":["Откуда пришли последние пять клиентов?","Сколько из них дошло до работ?","Какие слоты остались пустыми и почему?","Как вы отличаете внеплановую закупку материалов от обычной?"],"funnel":[["Awareness","Уникальные контакты из объявлений","Показы по кабинету, пока нет данных","Месяц"],["Acquisition","Уникальные квалифицированные лиды","Контакты Авито","Месяц"],["Activation","Автовладелец получил выполненную услугу","Записанные из целевых лидов","До 30 дней"],["Retention","Активные студии с закупкой в М+1","Когорта действующих студий; отдельно тест и контроль","М+1"],["Referral","Новая подтвержденная студия по рекомендации","Партнеры пилота; факта нет","90 дней"],["Revenue","Инкрементальные оплаченные закупки FIVEROX","Разница с сопоставимым контролем","Месяц"]],"experiments":[["V1","Удержание","Лиды повышают вклад закупок относительно контроля.","10 тестовых и сопоставимые контрольные студии, 30 дней базиса и 60 дней наблюдения.","Прирост закупок и вклад. Для безубыточности при базовой марже ≈389 тыс. ₽/мес.","70 тыс. ₽ на регион в месяц. При нулевых выполненных работах после 10 лидов проверить маршрут.","9","6","7","Напрямую проверяет инкрементальность."],["V2","Скорость приема","Быстрая реакция студии повышает запись.","Чередовать дежурные окна, журнал событий, 20 лидов.","Подтвержденные записи / квалифицированные лиды; базовый ориентир 50%.","Тот же рекламный бюджет. Пауза при повторяющихся пропущенных контактах.","7","5","8","Снижение потерь без расширения бюджета."],["V3","Качество объявления","Детализация услуги снижает долю неподходящих заявок.","Два объявления с сопоставимым показом, 14 дней.","Целевые лиды / все лиды и CPL с ведением.","Не превышать лимит региона. Пауза при CPL выше 3 500 ₽ без улучшения качества.","7","5","7","Сравнение при равных периодах."]],"execution":[["Неделя 1","Руководитель маркетинга и аналитик","Подобрать тест и контроль, зафиксировать базовый оборот и доступную мощность студий."],["Неделя 2","Специалист Авито и координатор","Лимит рекламы, отдельные ID лидов, SLA, согласованы ответственные студии."],["Недели 3–4","Координатор и партнеры","Факт распределения, записи, работ и контроль дублей."],["Месяцы 2–3","Финансы и руководитель маркетинга","Сверить М+1, дополнительные закупки и вклад после расходов; решение по региону."]]}};
+const $=s=>document.querySelector(s);
+const f=(v,d=1)=>finite(v)?v.toLocaleString('ru-RU',{maximumFractionDigits:d}):'—';
+const r=(v,d=0)=>finite(v)?f(v,d)+' ₽':'—';
+const percent=v=>finite(v)?f(v*100)+'%':'—';
+const round=v=>finite(v)?f(Math.ceil(v),0):'—';
+const sections={overview:"Экономика",canvas:"Остервальдер",customer:"Клиент и ценность",funnel:"AAARRR",goals:"Ханин",cohorts:"Когорты и LTV",experiments:"ICE и HADI",execution:"План работ",sources:"Рынок и источники"};
+const labels={manual:"Ручной обзвон",ai:"ИИ-квалификация",avito:"Авито"};
+const state={...defaults};
+let type,view;
+const table=(headers,rows)=>`<div class="table-scroll" tabindex="0"><table><thead><tr>${headers.map(h=>`<th scope="col">${h}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>`<tr>${row.map((v,n)=>n===0?`<th scope="row">${v}</th>`:`<td>${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+const panel=(title,body)=>`<section class="box"><h3>${title}</h3>${body}</section>`;
+const note=s=>`<p class="note">${s}</p>`;
+const list=a=>'<ul>'+a.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+const fields={
+  base:"Точек в базе",confirmed:"Подтверждение профиля, %",phoneTest:"Тест по телефону, %",visitShare:"Визит из оставшихся, %",days:"Выездных дней / месяц",visitsDay:"Визитов в день",reserve:"Резерв выездов, %",
+  meetTest:"Встреча → тест, %",meetSale:"Встреча → покупка, %",held:"Согласован → проведен тест, %",afterTest:"Проведен тест → покупка, %",
+  first:"Первая закупка, ₽",monthly:"Месячная закупка активной точки, ₽",margin:"Маржа до премии, %",bonus:"Премия с оборота, %",manager:"Оклад, ₽ / месяц",travel:"Расход на визит, ₽",contactCost:"Прямой расход на запись базы, ₽",initialManual:"Разовая подготовка, ₽",manualGoal:"Цель вклада / месяц, ₽",
+  eligible:"Доля базы с допуском к обзвону, %",aiConfirm:"Подтверждение среди допущенных, %",aiPhone:"ИИ согласовал тест, %",aiReady:"ИИ передал готовую к покупке студию, %",aiVisit:"ИИ передал студию, которой нужен визит, %",aiAccept:"Горячий лид → покупка, %",minutes:"Платных минут на допущенную запись",minutePrice:"Стоимость минуты, ₽",dev:"Разовая разработка, ₽",aiGoal:"Цель вклада / месяц, ₽",
+  retention:"Сохранение закупающей точки каждый месяц, %",refShare:"Студии, давшие рекомендацию, %",refSales:"Рекомендация → покупка, %",
+  partners:"Студии в группе Авито",holdout:"Удержание контрольной группы, %",campaign:"Удержание с Авито, %",ads:"Рекламный бюджет, ₽ / месяц",fee:"Ведение кабинета, ₽ / месяц",cpl:"CPL рекламы, ₽",extra:"Дополнительные закупки сверх удержания, ₽",qualified:"Целевые лиды / лиды, %",booking:"Запись / целевые лиды, %",service:"Работа / записи, %",avitoGoal:"Цель вклада / месяц, ₽"
+};
+const fieldGroups={
+  manual:[["База и маршрут",["base","confirmed","phoneTest","visitShare","days","visitsDay","reserve","meetTest","meetSale","held","afterTest"]],["Экономика и долгосрочная ценность",["first","monthly","margin","bonus","manager","travel","contactCost","initialManual","retention","refShare","refSales","manualGoal"]]],
+  ai:[["Квалификация и минуты",["base","eligible","aiConfirm","aiPhone","aiReady","aiVisit","aiAccept","minutes","minutePrice","dev"]],["Выезды и тесты",["days","visitsDay","reserve","meetTest","meetSale","held","afterTest"]],["Экономика и долгосрочная ценность",["first","monthly","margin","bonus","manager","travel","retention","refShare","refSales","aiGoal"]]],
+  avito:[["Кабинет и заявки",["ads","fee","cpl","qualified","booking","service"]],["Закупки и удержание",["partners","holdout","campaign","monthly","extra","margin","bonus","avitoGoal"]]]
+};
+const typical=new Set(["visitShare","days","reserve","travel","contactCost","initialManual","manualGoal","aiGoal","avitoGoal","eligible","aiConfirm","aiPhone","aiReady","aiVisit","aiAccept","minutes","retention","refShare","refSales","partners","holdout","campaign","extra","qualified","booking","service"]);
+const special={visitShare:"Доля оставшихся подтвержденных точек с состоявшимся визитом до ограничения мощности.",monthly:"Сценарий трактует 100 тыс. ₽ как месячные закупки активной точки.",contactCost:"0 до сверки стоимости парсинга, образцов и работы с базой.",eligible:"100% — верхняя расчетная оценка, только после проверки фактического допуска.",minutes:"Среднее по допущенным записям, включая записи без тарификации.",extra:"Только независимый прирост, еще не учтенный через удержание.",ads:"Принято 50 тыс. ₽ в месяц по предыдущему уточнению."};
+const esc=x=>String(x).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+function nav(){
+  $('#units').innerHTML=Object.entries(labels).map(([id,t])=>`<a href="#${id}" ${type===id?'aria-current="page"':''}>${t}</a>`).join('');
+  $('#sections').innerHTML=Object.entries(sections).map(([id,t])=>`<a href="#${type}${id==='overview'?'':'/'+id}" ${view===id?'aria-current="page"':''}>${t}</a>`).join('');
+}
+function inputs(){
+  $('#fields').innerHTML=fieldGroups[type].map(([title,keys])=>`<fieldset><legend>${title}</legend>${keys.map(key=>{
+    const percent=fields[key].endsWith('%'), min=key==='cpl'?1:0;
+    return `<label for="input-${key}"><span>${fields[key]}</span><input required id="input-${key}" data-key="${key}" type="number" min="${min}" ${percent?'max="100"':''} step="any" value="${state[key]}" aria-describedby="hint-${key}"><small id="hint-${key}">${special[key]||(typical.has(key)?'Типовое значение модели. Сверить на пилоте.':'Исходное значение из задания.')}</small></label>`;
+  }).join('')}</fieldset>`).join('');
+}
+const income=(a,m)=>a==='avito'?[
+ ["Бюджет и ведение",r(m.cost)],["Контакты, ожидаемо",f(m.lead)],["Стоимость лида с ведением",r(m.fullCpl)],
+ ["Ожидаемые выполненные работы студий",f(m.serviced)],["Разница активных студий",f(m.extraPartners)],["Прирост закупок FIVEROX",r(m.revenue)],
+ ["Вклад после расходов программы",r(m.operating)],["Безубыточность по доп. закупкам",r(m.need)],["Дополнительно удержанных для безубыточности",round(m.needPartners)]
+]:[
+ ["Подтверждены",f(m.confirmed)],["Тесты по телефону",f(m.phone)],["Потребность / емкость визитов",f(m.wanted)+" / "+f(m.capacity)],
+ ["Визиты",f(m.visits)],["Тесты договорены / проведены",f(m.scheduled)+" / "+f(m.completed)],["Купили сразу / после теста",f(m.direct+(m.hotBuyers||0))+" / "+f(m.testBuyers)],
+ ["Первые покупатели",f(m.buyers,2)],["Выручка первых заказов",r(m.revenue)],["Маржа до премии / премия",r(m.margin)+" / "+r(m.bonus)],
+ ["Оклад и выезды / расход на входы",r(m.fixed)+" / "+r(m.inputSpend)],["Операционный вклад",r(m.operating)],["Вклад после разовых расходов",r(m.launch)],
+ ["Полное привлечение одного покупателя",r(m.cac)],["Первых покупателей для безубыточности",round(m.breakEven)],["Закупки активной когорты / месяц",r(m.matureTurnover)]
+];
+function overview(m){
+  const isAI=type==='ai';let out=panel("Воронка и экономика месяца",table(["Метрика","Сценарий"],income(type,m)));
+  if(type==='manual')out+=panel("Полная загрузка базы",table(["Метрика","Сценарий"],[["Выездных дней",round(m.fullDays)],["Первых покупателей по всей когорте",f(m.fullBuyers,2)],["Выручка этой когорты",r(m.fullRevenue)]])+note("Часть встреч может перейти на следующий месяц. 100 тыс. ₽ за активный месяц используется в когортах, первая закупка учитывается отдельно."));
+  if(isAI){
+    const b=manual(state);
+    out+=panel("Контроль против ручного обзвона",table(["Метрика","Сценарий"],[["Передано менеджеру",f(m.handoff)],["Готовы купить / оплатили",f(m.ready)+" / "+f(m.hotBuyers)],["Платных минут",f(m.minutes)],["Телефония",r(m.calls)],["Уменьшение визитов",f(b.visits-m.visits)],["Разница операционного вклада",r(m.operating-b.operating)],["Окупаемость разработки из прироста",div(state.dev,m.operating-b.operating)===null?'При этих входах прироста нет':f(div(state.dev,m.operating-b.operating))+" мес."]])+note("Фонд оплаты сохранен в обеих моделях. Высвобожденные выезды становятся экономией после изменения фактических затрат либо дают ресурс для дополнительной работы."));
+  }
+  if(type==='avito')out+=panel("Разделение результатов студии и FIVEROX",note("Цена работы для автовладельца не прибавляется к выручке FIVEROX. Результат программы — дополнительные закупки материалов относительно контроля."));
+  const driver=type==='avito'?'monthly':'first';
+  const alternate=calculators[type]({...state,[driver]:state[driver]*1.10});
+  return out+panel("Чувствительность и бюджет",table(["Условие","Результат"],[["Чек или месячная закупка +10%",r(alternate.operating)],["Изменение к базовому результату",r(alternate.operating-m.operating)],["Кассовый минимум расходов без учета закупки товара",r(type==='avito'?m.cost:m.fixed+m.inputSpend+m.initial)]])+note("Сальдо показано после перечисленных затрат. Для денежного календаря нужны сроки оплат, закупка товара, логистика, налоги и фактические условия. Неподтвержденные прямые расходы сейчас приняты за 0."));
+}
+function canvas(data){
+  const blocks=data.canvas.map(q=>`<details class="block ${q.id}"><summary>${q.title}</summary><p>${q.what}</p><p><b>Метрика</b> · ${q.kpi}</p><p class="note">Проверка · ${q.check}</p></details>`);
+  return '<div class="canvas">'+blocks.join('')+'</div>'+note('Девять блоков бизнес-модели. Osterwalder &amp; Pigneur / Strategyzer. Метрики отражают сценарий пилота.');
+}
+function customer(data){
+  const v=data.vpc;
+  const headings=["Не видит проблему","Видит проблему","Выбирает решение","Сравнивает поставщиков","Готов действовать"];
+  return panel("Ценность для клиента",table(["Задача, барьер и выгода","Ответ в модели"],[[v.job,v.offer],[v.pain,v.relief],[v.gain,v.proof]])+note("Альтернатива · "+data.alternative))+
+    panel("Лестница осведомленности",table(["Этап","Сообщение или действие"],headings.map((h,i)=>[h,data.ladder[i]])))+
+    panel("Интервью с клиентами",list(data.interview)+note("8 интервью по 20 минут. Обсуждать прошлый опыт, фиксировать факты отдельным полем CRM. Опросы еще не проводились."));
+}
+function funnelValues(id,x,m){
+  if(id==='avito')return [[m.lead,null],[m.qualified,m.lead],[m.serviced,m.booked],[m.retained,x.partners],[null,x.partners],[m.revenue,null]];
+  const isAI=id==='ai';
+  return [[isAI?m.allowed:x.base,x.base],[m.confirmed,isAI?m.allowed:x.base],
+    [m.completed+m.direct+(m.hotBuyers||0),isAI?m.handoff:m.confirmed],
+    [m.buyers*pct(x.retention),m.buyers],[m.buyers*pct(x.refShare)*pct(x.refSales),m.buyers],
+    [m.buyers,isAI?m.handoff:m.confirmed]];
+}
+function funnel(data,m){
+  const values=funnelValues(type,state,m);
+  return '<div class="stage-grid">'+data.funnel.map(([stage,event,denom,when],i)=>{
+    const [a,b]=values[i], money=type==='avito'&&i===5;
+    return `<article class="box"><h3>${stage}</h3><strong>${money?r(a):f(a,2)}${b===null?'':' / '+f(b,2)}</strong><p>${event}</p><p class="note">${denom} · ${when}${b>0?' · '+percent(a===null?null:a/b):''}</p></article>`;
+  }).join('')+'</div>'+note("Доля показывает условный переход для указанного знаменателя. Рекомендация считается по новому ИНН, повтор — по прежнему. Для Авито AAARRR связывает путь автовладельца и закупки студии двумя отдельными ID.");
+}
+const pretty=(v,unit)=>!finite(v)?'—':unit==='₽'?r(v,2):f(v,2)+' '+unit;
+function goals(m){
+  return panel("Семь целевых метрик Ханина",table(["Рычаг","Текущий","Целевой","При фиксированных условиях"],khanin(type,state,m).map(q=>[q.label,pretty(q.base,q.unit),pretty(q.target,q.unit),q.note]))+
+  note("Чтобы сменить цель, откройте параметры модели. Прочерк означает отсутствие допустимого значения или положительного знаменателя. Цели показаны по одному рычагу. Для физических объемов округляйте вверх и проверяйте загрузку."));
+}
+function cohortView(m){
+  const c=cohorts(type,state,m), sum=key=>c.reduce((a,b)=>a+b[key],0), base=type==='avito'?state.partners:m.buyers;
+  const cac=type==='avito'?div(sum('allocated'),base):div(m.fixed+m.inputSpend+m.initial,base);
+  return panel("Когорта · 6 месяцев",table(["Возраст","Активных","Контроль","Выручка","Вклад до выделенных затрат","Выделенные затраты","Итого"],c.map(z=>["М+"+z.age,f(z.current,2),f(z.control,2),r(z.revenue),r(z.contribution),r(z.allocated),r(z.result)]))+
+    note(type==='avito'?"В М+0 бюджет расходуется до измерения удержания. Затем бюджет повторяется каждый месяц. Доходом считается разница между сопоставимыми когортами.":"В М+0 первая закупка. В М+1…5 месячный чек умножен на долю сохраненных клиентов. Полный CAC и разовая подготовка отнесены на входящую когорту один раз."))+
+    panel("LTV на исходную студию",table(["Метрика","На студию"],[["LTV по выручке",r(div(sum('revenue'),base))],["LTV по вкладу",r(div(sum('contribution'),base))],["Затраты программы / полный CAC с запуском",r(cac)],["LTV после выделенных затрат",r(div(sum('result'),base))]])+
+    note("Возрастные прогнозы используют постоянную условную вероятность повторной активности. Для факта используйте зрелые когорты CRM, незрелым месяцам не присваивайте ноль."));
+}
+function experimentView(data){
+  const trials=data.experiments.map(e=>({e,ice:(+e[6]+ +e[7]+ +e[8])/3})).sort((a,b)=>b.ice-a.ice);
+  return panel("Приоритеты ICE и протоколы HADI",table(["Тест","Влияние / уверенность / простота","ICE","Основание"],trials.map(({e,ice},i)=>[e[0]+" · "+e[1]+(i===0?" · первый":""),e.slice(6,9).join(" / "),f(ice,2),e[9]])))+
+    trials.map(({e})=>`<details class="box"><summary>${e[0]} · ${e[1]}</summary><dl><dt>H · Гипотеза</dt><dd>${e[2]}</dd><dt>A · Действие</dt><dd>${e[3]}</dd><dt>D · Данные</dt><dd>${e[4]}</dd><dt>I · Решение</dt><dd>${e[5]} Факта пока нет. Решение — повторить, изменить или остановить по данным окна.</dd></dl></details>`).join('');
+}
+function execution(data){
+  return panel("Пилот на 90 дней",table(["Окно","Ответственный","Результат и приемка"],data.execution)+note("Раз в неделю сверять воронку по ID: данные, отклонение, препятствие, следующее действие, ответственный и срок. Роли распределяются действующей командой. Бюджеты тестов согласуются владельцем канала."));
+}
+function sources(data){
+  return panel("Паспорт и доступ к данным",list([data.scope,data.geo,data.unit,data.market,data.gaps]))+
+    panel("Источники",table(["Материал · 21.11.2026","Что подтверждает"],data.sources.map(([t,url,q])=>[url?`<a href="${url}">${t}</a>`:t,q])));
+}
+function render(){
+  const errors=[$('#parameters').querySelector('input:invalid')?"Проверьте значения и диапазоны.":"",
+    state.meetTest+state.meetSale>100?'Исходы встречи превышают 100%.':'',
+    state.aiPhone+state.aiReady+state.aiVisit>100?'Три статуса ИИ превышают 100%.':''].filter(Boolean);
+  $('#status').textContent=errors.join(" ");
+  $('#status').hidden=!errors.length;
+  if(errors.length){$('#content').innerHTML='';return;}
+  const data=model[type],m=calculators[type](state);
+  const count=type==='avito'?m.lead:m.buyers;
+  $('#kpi').innerHTML=[[type==='avito'?"Лидов студиям":"Первые покупатели",f(count,2)],["Выручка FIVEROX",r(m.revenue)],["Вклад после расходов канала",r(m.operating)]].map(([l,v])=>`<div><strong>${v}</strong><span>${l}</span></div>`).join('');
+  $('#content').innerHTML=({overview:()=>overview(m),canvas:()=>canvas(data),customer:()=>customer(data),funnel:()=>funnel(data,m),
+    goals:()=>goals(m),cohorts:()=>cohortView(m),experiments:()=>experimentView(data),execution:()=>execution(data),sources:()=>sources(data)})[view]();
+}
+function route(){
+  const [a,b]=location.hash.slice(1).split('/');
+  type=Object.hasOwn(labels,a)?a:'manual';view=Object.hasOwn(sections,b)?b:'overview';
+  const data=model[type];
+  $('#title').textContent=data.title;
+  $('#scope').textContent=data.scope;
+  $('#unit').textContent=data.unit;
+  $('#params-unit').textContent=data.unit+" На исходных значениях "+(type==='avito'?'50 000 ₽ / 2 500 ₽ = 20 лидов.':'200 записей × 80% = 160 подтвержденных при допуске всей базы.');
+  nav();inputs();render();
+}
+$('#parameters').addEventListener('submit',e=>e.preventDefault());
+$('#parameters').addEventListener('input',e=>{
+  const key=e.target.dataset.key;
+  if(key&&e.target.validity.valid){
+    const prev=state[key];state[key]=e.target.valueAsNumber;
+    if((['meetTest','meetSale'].includes(key)&&state.meetTest+state.meetSale>100)||
+       (['aiPhone','aiReady','aiVisit'].includes(key)&&state.aiPhone+state.aiReady+state.aiVisit>100)){
+      state[key]=prev;e.target.setCustomValidity("Сумма долей превышает 100%.");
+    }
+  }
+  render();
+});
+$('#parameters').addEventListener('beforeinput',e=>{if(e.target.dataset.key)e.target.setCustomValidity('');});
+$('#parameters').addEventListener('reset',e=>{e.preventDefault();Object.assign(state,defaults);route();});
+$('#export').addEventListener('click',()=>{
+  const link=document.createElement('a');
+  const url=URL.createObjectURL(new Blob([JSON.stringify({inputs:state,models:model},null,2)],{type:'application/json'}));
+  link.href=url;link.download="FIVEROX_scenarios.json";link.click();setTimeout(()=>URL.revokeObjectURL(url),500);
+});
+window.addEventListener('hashchange',route);
+route();
+</script></body></html>
